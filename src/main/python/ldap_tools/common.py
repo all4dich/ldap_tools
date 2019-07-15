@@ -25,7 +25,7 @@ class LDAPClient:
     def username(self):
         return self._username
 
-    @property.setter
+    @username.setter
     def username(self, val):
         self._username = val
 
@@ -33,7 +33,7 @@ class LDAPClient:
     def password(self):
         return self._password
 
-    @property.setter
+    @password.setter
     def password(self, val):
         self._password = val
 
@@ -41,13 +41,13 @@ class LDAPClient:
     def search_root(self):
         return self._search_root
 
-    @property.setter
-    def search_rot(self, value):
+    @search_root.setter
+    def search_root(self, value):
         self._search_root = value
 
     def get_connection(self):
         server = Server(self.host)
-        conn = Connection(server, user=self.user, password=self.password, authentication=self.authentication)
+        conn = Connection(server, user=self._username, password=self._password, authentication=self.authentication)
         conn.bind()
         return conn
 
@@ -57,6 +57,6 @@ class LDAPClient:
             logger.warning("Set 'search_root' and try again")
             return None
         conn.search(self._search_root, '(objectClass=person)',
-                    attributes=['name', 'mail', 'mobile', 'phone', 'cn', 'department', 'description',
-                                'displayNamePrintable', 'displayName'])
+                    attributes=['name', 'mail', 'mobile', 'cn', 'department', 'description','displayNamePrintable', 'displayName'])
         return conn.entries
+
