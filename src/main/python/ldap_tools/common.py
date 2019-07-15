@@ -81,3 +81,13 @@ class LDAPClient:
                 members.append(each_entry)
         return members
 
+    def get_child(self,oc="person"):
+        if self._search_root is None:
+            logger.warning("Set 'search_root' and try again")
+            return None
+        conn = self.get_connection()
+        conn.search(self._search_root, f"(objectClass={oc})",
+                    attributes=['name', 'mail', 'mobile', 'cn', 'department', 'description',
+                                'displayNamePrintable', 'displayName'])
+        return conn.entries
+
