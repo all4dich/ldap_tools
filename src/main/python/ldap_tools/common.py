@@ -60,13 +60,16 @@ class LDAPClient:
         conn.bind()
         return conn
 
-    def get_departments(self, dept_name):
+    def get_objects(self, obj_name):
         conn = self.get_connection()
         if self._search_root is None:
             logger.warning("Set 'search_root' and try again")
             return None
-        conn.search(self._search_root, '(cn=' + dept_name +')', attributes=self._search_attributes )
+        conn.search(self._search_root, '(cn=' + obj_name +')', attributes=self._search_attributes )
         return conn.entries
+
+    def get_departments(self, dept_name):
+        return self.get_objects(dept_name)
 
     def get_members(self, dept_name):
         members = []
