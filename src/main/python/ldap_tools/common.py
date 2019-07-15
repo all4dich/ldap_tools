@@ -20,6 +20,7 @@ class LDAPClient:
         self._password = password
         self.authentication = authentication
         self._search_root = search_root
+        self._search_attributes = ['name', 'mail', 'mobile', 'cn', 'department', 'description', 'displayNamePrintable', 'displayName']
 
     @property
     def username(self):
@@ -45,6 +46,14 @@ class LDAPClient:
     def search_root(self, value):
         self._search_root = value
 
+    @property
+    def search_attributes(self):
+        return self._search_attributes
+
+    @search_attributes.setter
+    def search_attributes(self, value):
+        self._search_attributes = value
+
     def get_connection(self):
         server = Server(self.host)
         conn = Connection(server, user=self._username, password=self._password, authentication=self.authentication)
@@ -56,12 +65,7 @@ class LDAPClient:
         if self._search_root is None:
             logger.warning("Set 'search_root' and try again")
             return None
-        conn.search(self._search_root, '(cn=' + dept_name +')',
-                     attributes=[
-                         'cn', 'mail', 'displayName',
-                         'mobile', 'description',
-                     ]
-                     )
+        conn.search(self._search_root, '(cn=' + dept_name +')', attributes=self._search_attributes )
         return conn.entries
 
     def get_members(self, dept_name):
@@ -74,9 +78,7 @@ class LDAPClient:
         depts = self.get_departments(dept_name)
         for each_dept in depts:
             member_search_base = each_dept.entry_dn.split(",")[1:]
-            conn.search(member_search_base, '(objectClass=person)',
-                        attributes=['name', 'mail', 'mobile', 'cn', 'department', 'description',
-                                    'displayNamePrintable', 'displayName'])
+            conn.search(member_search_base, '(objectClass=person)', attributes=self._search_attributes)
             for each_entry in conn.entries:
                 members.append(each_entry)
         return members
@@ -86,8 +88,6 @@ class LDAPClient:
             logger.warning("Set 'search_root' and try again")
             return None
         conn = self.get_connection()
-        conn.search(self._search_root, f"(objectClass={oc})",
-                    attributes=['name', 'mail', 'mobile', 'cn', 'department', 'description',
-                                'displayNamePrintable', 'displayName'])
+        conn.search(self._search_root, f"(objectClass={oc})", attributes=self._search_attributes)
         return conn.entries
 
