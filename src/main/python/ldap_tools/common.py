@@ -55,12 +55,23 @@ class LDAPClient:
         self._search_attributes = value
 
     def get_connection(self):
+        """
+        Return a connection to LDAP server
+        :return: conn
+        """
         server = Server(self.host)
         conn = Connection(server, user=self._username, password=self._password, authentication=self.authentication)
         conn.bind()
         return conn
 
     def get_objects(self, obj_name):
+        """
+        Return a list of objects with a query 'obj_name'
+        'obj_name' is a query statement written by a caller
+        Example. cn=John Doe
+        :param obj_name:
+        :return:
+        """
         conn = self.get_connection()
         if self._search_root is None:
             logger.warning("Set 'search_root' and try again")
@@ -72,6 +83,11 @@ class LDAPClient:
         return self.get_objects(f"cn={dept_name}")
 
     def get_members(self, dept_name):
+        """
+        Get a list of members who are under 'dept_name'
+        :param dept_name: Department name
+        :return:
+        """
         members = []
         conn  = self.get_connection()
         if self._search_root is None:
@@ -87,6 +103,11 @@ class LDAPClient:
         return members
 
     def get_child(self,oc="person"):
+        """
+        Return all child elements under 'self._search_root'
+        :param oc:
+        :return:
+        """
         if self._search_root is None:
             logger.warning("Set 'search_root' and try again")
             return None
