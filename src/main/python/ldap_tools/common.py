@@ -94,9 +94,9 @@ class LDAPClient:
             logger.warning("Set 'search_root' and try again")
             return None
         #Get a dapartment object
-        depts = self.get_departments(dept_name)
+        depts = self.get_objects(f"&(objectClass=organizationalUnit)(ou=*{dept_name}*)")
         for each_dept in depts:
-            member_search_base = each_dept.entry_dn.split(",")[1:]
+            member_search_base = each_dept.entry_dn
             conn.search(member_search_base, '(objectClass=person)', attributes=self._search_attributes)
             for each_entry in conn.entries:
                 members.append(each_entry)
