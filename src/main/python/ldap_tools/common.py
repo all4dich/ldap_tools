@@ -115,3 +115,18 @@ class LDAPClient:
         conn = self.get_connection()
         conn.search(self._search_root, f"(objectClass={oc})", attributes=self._search_attributes)
         return conn.entries
+
+    def find_department(self, dept_str):
+        conn = self.get_connection()
+        if self._search_root is None:
+            logger.warning("Set 'search_root' and try again")
+            return None
+        # Get a dapartment object
+        depts = self.get_objects(f"&(objectClass=organizationalUnit)(ou=*{dept_str}*)")
+        for each_dept in depts:
+            dept_name = each_dept.name.value
+            dept_name_str = ".".join(dept_name.split(".")[1:])
+            dept_name_str = dept_name_str.replace("(",  "*").replace(")", "*")
+            dept_cn_obj = self.get_objects(f"cn={dept_name_str}_grp")
+            print(each_dept.entry_dn)
+            print(dept_cn_obj[0].entry_dn)
