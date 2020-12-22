@@ -14,13 +14,14 @@ logger.addHandler(ch)
 
 
 class LDAPClient:
-    def __init__(self, host, username, password, authentication=NTLM, search_root = None):
+    def __init__(self, host, username, password, authentication=NTLM, search_root=None):
         self.host = host
         self._username = username
         self._password = password
         self.authentication = authentication
         self._search_root = search_root
-        self._search_attributes = ['name', 'mail', 'mobile', 'cn', 'department', 'description', 'displayNamePrintable', 'displayName']
+        self._search_attributes = ['name', 'mail', 'mobile', 'cn', 'department', 'description', 'displayNamePrintable',
+                                   'displayName']
 
     @property
     def username(self):
@@ -76,7 +77,7 @@ class LDAPClient:
         if self._search_root is None:
             logger.warning("Set 'search_root' and try again")
             return None
-        conn.search(self._search_root, f"({obj_name})", attributes=self._search_attributes )
+        conn.search(self._search_root, f"({obj_name})", attributes=self._search_attributes)
         return conn.entries
 
     def get_departments(self, dept_name):
@@ -89,11 +90,11 @@ class LDAPClient:
         :return:
         """
         members = []
-        conn  = self.get_connection()
+        conn = self.get_connection()
         if self._search_root is None:
             logger.warning("Set 'search_root' and try again")
             return None
-        #Get a dapartment object
+        # Get a dapartment object
         depts = self.get_objects(f"&(objectClass=organizationalUnit)(ou=*{dept_name}*)")
         for each_dept in depts:
             member_search_base = each_dept.entry_dn
@@ -102,7 +103,7 @@ class LDAPClient:
                 members.append(each_entry)
         return members
 
-    def get_child(self,oc="person"):
+    def get_child(self, oc="person"):
         """
         Return all child elements under 'self._search_root'
         :param oc:
@@ -114,4 +115,3 @@ class LDAPClient:
         conn = self.get_connection()
         conn.search(self._search_root, f"(objectClass={oc})", attributes=self._search_attributes)
         return conn.entries
-
