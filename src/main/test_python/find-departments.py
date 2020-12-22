@@ -21,4 +21,6 @@ if __name__ == "__main__":
         lge_department_name = "TV DevOps개발"
     except:
         lge_department_name = input("LGE department name: ")
-    a.find_department(lge_department_name)
+    departments = a.find_department(lge_department_name)
+    for each_dept in departments:
+        print(each_dept.name.value)
